@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactFlow — Where Truth Moves Smoothly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #f59e0b;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --text-light: #64748b;
+            --text-dark: #334155;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --radius: 12px;
+            --font: 'Inter', sans-serif;
+        }
+
+        .dark-mode {
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #2563eb;
+            --secondary: #fbbf24;
+            --accent: #34d399;
+            --danger: #f87171;
+            --light: #0f172a;
+            --dark: #cbd5e1;
+            --text-light: #94a3b8;
+            --text-dark: #e2e8f0;
+            --card-bg: #1e293b;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--light);
+            color: var(--text-dark);
+            transition: var(--transition);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Landing Page */
+        .landing {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #f8fafc 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .news-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            font-family: var(--font);
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            opacity: 0;
+            user-select: none;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            line-height: 1.6;
+            z-index: 2;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--secondary);
+            color: var(--dark);
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            z-index: 2;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem 0;
+            background: var(--light);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            color: var(--text-dark);
+        }
+
+        .dashboard-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            background: var(--card-bg);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            color: var(--text-dark);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .topic-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topic-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+        }
+
+        .topic-card:hover {
+            transform: translateY(-10px) rotate(1deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .topic-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .topic-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .topic-description {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Timeline View */
+        .timeline-view {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem 0;
+            background: var(--light);
+            position: relative;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-btn {
+            background: var(--card-bg);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            color: var(--text-dark);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .timeline-title {
+            font-size: 2.5rem;
+            color: var(--text-dark);
+        }
+
+        .timeline-container {
+            display: flex;
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 0;
+            left: 50px;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            transform: scaleY(0);
+            transform-origin: top;
+        }
+
+        .timeline-events {
+            width: 100%;
+            padding-left: 100px;
+        }
+
+        .timeline-event {
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .event-marker {
+            position: absolute;
+            left: 40px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 4px solid var(--primary);
+            z-index: 2;
+        }
+
+        .event-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-date {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-headline {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .event-summary {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .verification-meter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meter-container {
+            width: 120px;
+            height: 120px;
+            position: relative;
+        }
+
+        .meter-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent) 0%, #e5e7eb 0%);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .meter-inner {
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+
+        .meter-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .bias-chart-container {
+            height: 200px;
+            margin-top: 1.5rem;
+        }
+
+        /* Summary Panel */
+        .summary-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--card-bg);
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .summary-panel.active {
+            right: 0;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .close-panel {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .summary-content {
+            line-height: 1.7;
+            color: var(--text-dark);
+        }
+
+        .summary-bullets {
+            margin-top: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .summary-bullets li {
+            margin-bottom: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: var(--card-bg);
+            border: 2px solid transparent;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--text-dark);
+            box-shadow: var(--shadow);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-btn:hover:not(.active) {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* Data Visualization */
+        .viz-section {
+            margin: 4rem 0;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .viz-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .viz-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: var(--light);
+            padding: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-stream {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .stream-line {
+            position: absolute;
+            height: 2px;
+            background: var(--primary);
+            width: 100%;
+            animation: streamFlow 20s linear infinite;
+        }
+
+        @keyframes streamFlow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .footer-content {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-tagline {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        .footer-text {
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .dashboard-header, .timeline-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .dashboard-controls {
+                align-self: flex-end;
+            }
+            
+            .topics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline-container {
+                flex-direction: column;
+            }
+            
+            .timeline-line {
+                left: 25px;
+            }
+            
+            .timeline-events {
+                padding-left: 60px;
+            }
+            
+            .event-marker {
+                left: 15px;
+            }
+            
+            .summary-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .filters {
+                justify-content: center;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --shadow: 0 0 0 2px var(--primary);
+            }
+            
+            .topic-card::before, .timeline-line {
+                height: 8px;
+                width: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <section class="landing active" id="landing">
+        <div class="news-particles" id="newsParticles"></div>
+        <div class="container">
+            <h1 class="logo">FactFlow</h1>
+            <p class="tagline">Where Truth Moves Smoothly</p>
+            <button class="btn" id="exploreTopics">Explore Topics</button>
+        </div>
+    </section>
+
+    <!-- Dashboard -->
+    <section class="dashboard" id="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h2 class="dashboard-title">Trending Topics</h2>
+                <div class="dashboard-controls">
+                    <button class="control-btn tooltip" id="themeToggle" aria-label="Toggle dark mode">
+                        🌙
+                    </button>
+                    <button class="control-btn tooltip" id="soundToggle" aria-label="Toggle ambient sound">
+                        🔈
+                    </button>
+                </div>
+            </div>
+
+            <div class="topics-grid" id="topicsGrid">
+                <!-- Topic cards will be added here dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline View -->
+    <section class="timeline-view" id="timelineView">
+        <div class="container">
+            <div class="timeline-header">
+                <button class="back-btn" id="backToDashboard">
+                    <span>←</span> Back to Topics
+                </button>
+                <h2 class="timeline-title" id="timelineTitle">Topic Timeline</h2>
+                <div class="dashboard-controls">
+                    <button class="control-btn" id="summarizeBtn" aria-label="Show summary">
+                        📋
+                    </button>
+                </div>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All Events</button>
+                <button class="filter-btn" data-filter="facts">Key Facts</button>
+                <button class="filter-btn" data-filter="charts">Charts</button>
+                <button class="filter-btn" data-filter="summary">Summary</button>
+            </div>
+
+            <div class="timeline-container">
+                <div class="timeline-line" id="timelineLine"></div>
+                <div class="timeline-events" id="timelineEvents">
+                    <!-- Timeline events will be added here dynamically -->
+                </div>
+            </div>
+
+            <div class="viz-section">
+                <h3 class="viz-title">Topic Mentions Over Time</h3>
+                <div class="viz-container">
+                    <canvas id="mentionsChart"></canvas>
+                </div>
+            </div>
+
+            <div class="viz-section">
+                <h3 class="viz-title">Global Impact Map</h3>
+                <div class="viz-container" id="mapViz">
+                    <!-- Map visualization would go here -->
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100%; color: var(--text-light);">
+                        Interactive map visualization (simulated)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Summary Panel -->
+    <div class="summary-panel" id="summaryPanel">
+        <div class="panel-header">
+            <h3 class="panel-title">AI Summary</h3>
+            <button class="close-panel" id="closePanel">&times;</button>
+        </div>
+        <div class="summary-content" id="summaryContent">
+            <!-- Summary content will be added here dynamically -->
+        </div>
+        <button class="btn" id="explainMore" style="width: 100%; margin-top: 2rem;">Explain More</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="data-stream" id="dataStream"></div>
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-tagline">Stay informed. Stay neutral. Stay flowing.</p>
+                <p class="footer-text">FactFlow breaks down complex news topics into simple, verified timelines and visual summaries. All information is sourced from multiple verified outlets.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // FactFlow - Interactive News Visualization Platform
+        // A self-contained single-file web application
+
+        // Application State
+        const state = {
+            currentTopic: null,
+            isDarkMode: false,
+            soundEnabled: false,
+            topics: [
+                {
+                    id: 'climate',
+                    title: 'Climate Policy',
+                    description: 'Global efforts to address climate change through policy and innovation',
+                    icon: '🌍',
+                    color: '#10b981'
+                },
+                {
+                    id: 'tech',
+                    title: 'Tech Innovations',
+                    description: 'Breakthrough technologies shaping our future society and economy',
+                    icon: '💻',
+                    color: '#3b82f6'
+                },
+                {
+                    id: 'economy',
+                    title: 'Global Economy',
+                    description: 'Financial markets, trade policies, and economic indicators worldwide',
+                    icon: '📈',
+                    color: '#f59e0b'
+                },
+                {
+                    id: 'health',
+                    title: 'Public Health',
+                    description: 'Medical advances, healthcare policies, and wellness trends',
+                    icon: '🏥',
+                    color: '#ef4444'
+                },
+                {
+                    id: 'politics',
+                    title: 'World Politics',
+                    description: 'Geopolitical developments, elections, and international relations',
+                    icon: '🏛️',
+                    color: '#8b5cf6'
+                }
+            ],
+            events: {
+                climate: [
+                    {
+                        date: 'Jan 15, 2023',
+                        headline: 'Historic Climate Agreement Reached at Global Summit',
+                        summary: 'World leaders agree on ambitious targets to reduce carbon emissions by 45% by 2030, with binding commitments from 95% of participating nations.',
+                        verification: 92,
+                        bias: { left: 15, center: 70, right: 15 }
+                    },
+                    {
+                        date: 'Mar 22, 2023',
+                        headline: 'Renewable Energy Investments Surpass Fossil Fuels for First Time',
+                        summary: 'Global investment in renewable energy sources exceeded $500 billion, marking a turning point in the transition to clean energy worldwide.',
+                        verification: 88,
+                        bias: { left: 25, center: 60, right: 15 }
+                    },
+                    {
+                        date: 'Jun 10, 2023',
+                        headline: 'Major Breakthrough in Carbon Capture Technology',
+                        summary: 'Scientists announce a new method that captures CO2 at twice the efficiency of previous technologies, potentially revolutionizing emission reduction efforts.',
+                        verification: 85,
+                        bias: { left: 10, center: 80, right: 10 }
+                    },
+                    {
+                        date: 'Sep 5, 2023',
+                        headline: 'Climate Migration Patterns Show Significant Shifts',
+                        summary: 'New data reveals changing migration patterns as populations move from climate-vulnerable regions, with implications for global policy and infrastructure.',
+                        verification: 78,
+                        bias: { left: 30, center: 50, right: 20 }
+                    }
+                ],
+                tech: [
+                    {
+                        date: 'Feb 8, 2023',
+                        headline: 'Quantum Computing Breakthrough Achieves Commercial Viability',
+                        summary: 'Tech company announces quantum processor capable of solving complex problems thousands of times faster than traditional supercomputers.',
+                        verification: 90,
+                        bias: { left: 10, center: 75, right: 15 }
+                    },
+                    {
+                        date: 'Apr 17, 2023',
+                        headline: 'AI Regulation Framework Adopted by 40+ Countries',
+                        summary: 'International consensus reached on ethical AI development guidelines, balancing innovation with privacy and security concerns.',
+                        verification: 86,
+                        bias: { left: 20, center: 65, right: 15 }
+                    },
+                    {
+                        date: 'Jul 3, 2023',
+                        headline: 'Neural Interface Technology Enables Thought-Controlled Devices',
+                        summary: 'Breakthrough in brain-computer interfaces allows users to control digital devices through thought alone, with applications for accessibility and beyond.',
+                        verification: 82,
+                        bias: { left: 15, center: 70, right: 15 }
+                    },
+                    {
+                        date: 'Oct 12, 2023',
+                        headline: 'Global Semiconductor Partnership Addresses Supply Chain Issues',
+                        summary: 'Major tech nations form alliance to stabilize semiconductor production and distribution, preventing future shortages affecting multiple industries.',
+                        verification: 79,
+                        bias: { left: 10, center: 80, right: 10 }
+                    }
+                ]
+            },
+            summaries: {
+                climate: "The global response to climate change has accelerated significantly in 2023, with unprecedented international cooperation and technological innovation. Key developments include the historic climate agreement setting ambitious emission reduction targets, a major shift in energy investment toward renewables, breakthroughs in carbon capture technology, and evolving understanding of climate migration patterns. These developments reflect a growing consensus on the urgency of climate action while highlighting the complex challenges of implementation across different economic and geographic contexts.",
+                tech: "Technological advancement in 2023 has been characterized by breakthroughs in quantum computing, the establishment of international AI governance frameworks, revolutionary neural interface technology, and strategic partnerships to secure semiconductor supply chains. These developments represent both the accelerating pace of innovation and the increasing recognition of the need for responsible development and global cooperation in the tech sector."
+            }
+        };
+
+        // DOM Elements
+        const landing = document.getElementById('landing');
+        const dashboard = document.getElementById('dashboard');
+        const timelineView = document.getElementById('timelineView');
+        const topicsGrid = document.getElementById('topicsGrid');
+        const timelineEvents = document.getElementById('timelineEvents');
+        const timelineLine = document.getElementById('timelineLine');
+        const timelineTitle = document.getElementById('timelineTitle');
+        const summaryPanel = document.getElementById('summaryPanel');
+        const summaryContent = document.getElementById('summaryContent');
+        const newsParticles = document.getElementById('newsParticles');
+        const dataStream = document.getElementById('dataStream');
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create news particles
+            createNewsParticles();
+            
+            // Create data stream
+            createDataStream();
+            
+            // Initialize topic cards
+            renderTopicCards();
+            
+            // Initialize event listeners
+            initEventListeners();
+            
+            // Initialize GSAP ScrollTrigger
+            gsap.registerPlugin(ScrollTrigger);
+        });
+
+        // Create floating news particles
+        function createNewsParticles() {
+            const words = ['Truth', 'Fact', 'Data', 'Verify', 'Evidence', 'Source', 'Context', 'Clarity', 'Balance', 'Neutral'];
+            
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = words[Math.floor(Math.random() * words.length)];
+                
+                // Random position
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                particle.style.left = `${left}%`;
+                particle.style.top = `${top}%`;
+                
+                // Random animation
+                const duration = 15 + Math.random() * 20;
+                const delay = Math.random() * 5;
+                
+                gsap.to(particle, {
+                    duration: duration,
+                    x: `+=${(Math.random() - 0.5) * 200}`,
+                    y: `+=${(Math.random() - 0.5) * 200}`,
+                    rotation: Math.random() * 360,
+                    opacity: 0.7,
+                    delay: delay,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                });
+                
+                newsParticles.appendChild(particle);
+            }
+        }
+
+        // Create data stream animation in footer
+        function createDataStream() {
+            for (let i = 0; i < 5; i++) {
+                const streamLine = document.createElement('div');
+                streamLine.className = 'stream-line';
+                streamLine.style.top = `${20 + i * 15}%`;
+                streamLine.style.animationDelay = `${i * 2}s`;
+                dataStream.appendChild(streamLine);
+            }
+        }
+
+        // Render topic cards on dashboard
+        function renderTopicCards() {
+            topicsGrid.innerHTML = '';
+            
+            state.topics.forEach(topic => {
+                const card = document.createElement('div');
+                card.className = 'topic-card';
+                card.dataset.topicId = topic.id;
+                
+                card.innerHTML = `
+                    <div class="topic-icon">${topic.icon}</div>
+                    <h3 class="topic-title">${topic.title}</h3>
+                    <p class="topic-description">${topic.description}</p>
+                `;
+                
+                // Set custom color
+                card.style.borderTopColor = topic.color;
+                
+                topicsGrid.appendChild(card);
+            });
+        }
+
+        // Initialize event listeners
+        function initEventListeners() {
+            // Explore topics button
+            document.getElementById('exploreTopics').addEventListener('click', showDashboard);
+            
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            
+            // Sound toggle
+            document.getElementById('soundToggle').addEventListener('click', toggleSound);
+            
+            // Back to dashboard
+            document.getElementById('backToDashboard').addEventListener('click', showDashboard);
+            
+            // Summarize button
+            document.getElementById('summarizeBtn').addEventListener('click', showSummary);
+            
+            // Close panel
+            document.getElementById('closePanel').addEventListener('click', hideSummary);
+            
+            // Explain more
+            document.getElementById('explainMore').addEventListener('click', explainMore);
+            
+            // Topic cards
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.topic-card')) {
+                    const topicId = e.target.closest('.topic-card').dataset.topicId;
+                    showTimeline(topicId);
+                }
+            });
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    // In a full implementation, this would filter the timeline
+                });
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (summaryPanel.classList.contains('active')) {
+                        hideSummary();
+                    } else if (timelineView.style.display === 'block') {
+                        showDashboard();
+                    }
+                }
+            });
+        }
+
+        // Show dashboard (from landing or timeline)
+        function showDashboard() {
+            if (landing.style.display !== 'none') {
+                // Coming from landing page
+                gsap.to(landing, {
+                    duration: 1,
+                    opacity: 0,
+                    onComplete: () => {
+                        landing.style.display = 'none';
+                        dashboard.style.display = 'block';
+                        
+                        // Animate dashboard in
+                        gsap.from(dashboard, {
+                            duration: 1,
+                            opacity: 0,
+                            y: 50
+                        });
+                        
+                        // Animate topic cards in sequence
+                        gsap.from('.topic-card', {
+                            duration: 0.8,
+                            y: 30,
+                            opacity: 0,
+                            stagger: 0.1,
+                            ease: "back.out(1.2)"
+                        });
+                    }
+                });
+            } else {
+                // Coming from timeline view
+                gsap.to(timelineView, {
+                    duration: 0.8,
+                    opacity: 0,
+                    onComplete: () => {
+                        timelineView.style.display = 'none';
+                        dashboard.style.display = 'block';
+                        
+                        // Animate dashboard in
+                        gsap.from(dashboard, {
+                            duration: 0.8,
+                            opacity: 0
+                        });
+                    }
+                });
+            }
+        }
+
+        // Show timeline for a specific topic
+        function showTimeline(topicId) {
+            const topic = state.topics.find(t => t.id === topicId);
+            if (!topic) return;
+            
+            state.currentTopic = topic;
+            
+            // Update timeline title
+            timelineTitle.textContent = topic.title;
+            
+            // Animate dashboard out
+            gsap.to(dashboard, {
+                duration: 0.8,
+                opacity: 0,
+                onComplete: () => {
+                    dashboard.style.display = 'none';
+                    timelineView.style.display = 'block';
+                    
+                    // Render timeline events
+                    renderTimelineEvents(topicId);
+                    
+                    // Create chart
+                    createMentionsChart(topicId);
+                    
+                    // Animate timeline in
+                    gsap.from(timelineView, {
+                        duration: 1,
+                        opacity: 0
+                    });
+                    
+                    // Animate timeline line
+                    gsap.to(timelineLine, {
+                        duration: 1.5,
+                        scaleY: 1,
+                        ease: "power2.out",
+                        delay: 0.5
+                    });
+                }
+            });
+        }
+
+        // Render timeline events for a topic
+        function renderTimelineEvents(topicId) {
+            const events = state.events[topicId];
+            if (!events) return;
+            
+            timelineEvents.innerHTML = '';
+            
+            events.forEach((event, index) => {
+                const eventEl = document.createElement('div');
+                eventEl.className = 'timeline-event';
+                eventEl.dataset.eventIndex = index;
+                
+                eventEl.innerHTML = `
+                    <div class="event-marker"></div>
+                    <div class="event-card">
+                        <div class="event-date">${event.date}</div>
+                        <h3 class="event-headline">${event.headline}</h3>
+                        <p class="event-summary">${event.summary}</p>
+                        
+                        <div class="verification-meter">
+                            <div class="meter-container">
+                                <div class="meter-circle" id="meter-${index}">
+                                    <div class="meter-inner">0%</div>
+                                </div>
+                            </div>
+                            <div class="meter-label">Verification Confidence</div>
+                        </div>
+                        
+                        <div class="bias-chart-container">
+                            <canvas id="biasChart-${index}"></canvas>
+                        </div>
+                    </div>
+                `;
+                
+                timelineEvents.appendChild(eventEl);
+            });
+            
+            // Set up scroll animations for events
+            gsap.utils.toArray('.timeline-event').forEach((event, i) => {
+                gsap.from(event, {
+                    scrollTrigger: {
+                        trigger: event,
+                        start: "top 80%",
+                        end: "bottom 20%",
+                        toggleActions: "play none none reverse"
+                    },
+                    duration: 1,
+                    opacity: 1,
+                    y: 0,
+                    delay: i * 0.2
+                });
+                
+                // Animate verification meter
+                const meter = document.getElementById(`meter-${i}`);
+                if (meter) {
+                    const percentage = events[i].verification;
+                    gsap.to(meter, {
+                        scrollTrigger: {
+                            trigger: event,
+                            start: "top 80%",
+                            toggleActions: "play none none reverse"
+                        },
+                        duration: 1.5,
+                        background: `conic-gradient(var(--accent) ${percentage}%, #e5e7eb ${percentage}%)`,
+                        delay: 0.5
+                    });
+                    
+                    // Animate percentage counter
+                    const inner = meter.querySelector('.meter-inner');
+                    gsap.to({ value: 0 }, {
+                        scrollTrigger: {
+                            trigger: event,
+                            start: "top 80%",
+                            toggleActions: "play none none reverse"
+                        },
+                        duration: 1.5,
+                        value: percentage,
+                        delay: 0.5,
+                        onUpdate: function() {
+                            inner.textContent = `${Math.round(this.targets()[0].value)}%`;
+                        }
+                    });
+                }
+                
+                // Create bias chart
+                createBiasChart(`biasChart-${i}`, events[i].bias);
+            });
+        }
+
+        // Create bias chart for an event
+        function createBiasChart(canvasId, biasData) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            // Wait for the element to be visible
+            setTimeout(() => {
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Left-Leaning', 'Centrist', 'Right-Leaning'],
+                        datasets: [{
+                            data: [biasData.left, biasData.center, biasData.right],
+                            backgroundColor: [
+                                '#3b82f6',
+                                '#10b981',
+                                '#ef4444'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-dark'),
+                                    font: {
+                                        family: 'Inter, sans-serif'
+                                    }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Reporting Bias Distribution',
+                                color: getComputedStyle(document.body).getPropertyValue('--text-dark'),
+                                font: {
+                                    family: 'Inter, sans-serif',
+                                    size: 14,
+                                    weight: '500'
+                                }
+                            }
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true,
+                            duration: 1500
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        // Create mentions chart for a topic
+        function createMentionsChart(topicId) {
+            const ctx = document.getElementById('mentionsChart').getContext('2d');
+            
+            // Sample data - in a real app this would come from an API
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const mentions = [120, 145, 180, 220, 260, 310, 350, 320, 280, 240, 200, 180];
+            
+            // Wait for the element to be visible
+            setTimeout(() => {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Media Mentions',
+                            data: mentions,
+                            borderColor: state.currentTopic.color,
+                            backgroundColor: `${state.currentTopic.color}20`,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-dark'),
+                                    font: {
+                                        family: 'Inter, sans-serif'
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-light')
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-light')
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeOutQuart'
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        // Show summary panel
+        function showSummary() {
+            if (!state.currentTopic) return;
+            
+            const summary = state.summaries[state.currentTopic.id];
+            if (!summary) return;
+            
+            summaryContent.innerHTML = `<p>${summary}</p>`;
+            summaryPanel.classList.add('active');
+            
+            // Animate panel in
+            gsap.from(summaryPanel, {
+                duration: 0.5,
+                x: 100,
+                opacity: 0
+            });
+        }
+
+        // Hide summary panel
+        function hideSummary() {
+            gsap.to(summaryPanel, {
+                duration: 0.3,
+                x: 100,
+                opacity: 0,
+                onComplete: () => {
+                    summaryPanel.classList.remove('active');
+                }
+            });
+        }
+
+        // Expand summary with more details
+        function explainMore() {
+            const bullets = document.createElement('ul');
+            bullets.className = 'summary-bullets';
+            
+            // Add sample bullet points - in a real app these would be AI-generated
+            const points = [
+                "Multiple independent sources confirm the timeline of events",
+                "Data has been cross-referenced with official records and statistics",
+                "Expert analysis provides context for understanding implications",
+                "The reporting reflects a balance of perspectives from various stakeholders"
+            ];
+            
+            points.forEach(point => {
+                const li = document.createElement('li');
+                li.textContent = point;
+                bullets.appendChild(li);
+            });
+            
+            summaryContent.appendChild(bullets);
+            
+            // Animate bullets in
+            gsap.from(bullets.children, {
+                duration: 0.5,
+                x: -20,
+                opacity: 0,
+                stagger: 0.1
+            });
+            
+            // Hide the explain more button
+            document.getElementById('explainMore').style.display = 'none';
+        }
+
+        // Toggle dark/light theme
+        function toggleTheme() {
+            state.isDarkMode = !state.isDarkMode;
+            
+            if (state.isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggle').textContent = '☀️';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('themeToggle').textContent = '🌙';
+            }
+            
+            // Save preference
+            localStorage.setItem('factflow-theme', state.isDarkMode ? 'dark' : 'light');
+        }
+
+        // Toggle ambient sound
+        function toggleSound() {
+            state.soundEnabled = !state.soundEnabled;
+            
+            if (state.soundEnabled) {
+                document.getElementById('soundToggle').textContent = '🔊';
+                playAmbientSound();
+            } else {
+                document.getElementById('soundToggle').textContent = '🔈';
+                stopAmbientSound();
+            }
+        }
+
+        // Play ambient sound
+        function playAmbientSound() {
+            // In a real implementation, this would play a base64 encoded audio
+            console.log('Ambient sound playing');
+        }
+
+        // Stop ambient sound
+        function stopAmbientSound() {
+            console.log('Ambient sound stopped');
+        }
+
+        // Load saved preferences
+        function loadPreferences() {
+            const savedTheme = localStorage.getItem('factflow-theme');
+            if (savedTheme === 'dark') {
+                state.isDarkMode = true;
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggle').textContent = '☀️';
+            }
+        }
+
+        // Initialize preferences
+        loadPreferences();
+    </script>
+</body>
+</html>
